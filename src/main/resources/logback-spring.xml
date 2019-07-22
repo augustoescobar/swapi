@@ -11,8 +11,6 @@
 
     <logger name="br.com.challenge.swapi" level="INFO" />
 
-    <logger name="org.springframework" level="WARN" />
-
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>

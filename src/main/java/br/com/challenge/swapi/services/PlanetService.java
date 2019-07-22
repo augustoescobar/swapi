@@ -1,52 +1,94 @@
 package br.com.challenge.swapi.services;
 
-import br.com.challenge.swapi.clients.SwapiPlanetClient;
-import br.com.challenge.swapi.clients.dtos.SwapiPlanet;
-import br.com.challenge.swapi.clients.dtos.SwapiPlanetPage;
+import br.com.challenge.swapi.documents.Planet;
+import br.com.challenge.swapi.repositories.PlanetRepository;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Collections.singletonMap;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Service
 public class PlanetService {
 
-    private static final Map<String, String> headersMap = singletonMap("User-Agent", "PostmanRuntime/7.15.2");
-
     private static final Logger logger = LogManager.getLogger(PlanetService.class);
 
-    private SwapiPlanetClient swapiPlanetClient;
+    private PlanetRepository planetRepository;
 
     @Autowired
-    public PlanetService(SwapiPlanetClient swapiPlanetClient) {
+    public PlanetService(PlanetRepository planetRepository) {
 
-        this.swapiPlanetClient = swapiPlanetClient;
+        this.planetRepository = planetRepository;
     }
 
-    public Optional<SwapiPlanet> findPlanetByName(@NotNull String name) {
+    private PageRequest normalize(PageRequest pageRequest) {
 
-        ResponseEntity<SwapiPlanetPage> response = swapiPlanetClient.getPlanets(headersMap, name.toLowerCase(), 1);
+        return PageRequest.of(
+                max(0, pageRequest.getPageNumber()),
+                max(0, min(50, pageRequest.getPageSize()))
+        );
+    }
 
-        if (response.getStatusCode().isError()
-            || response.getBody() == null
-            || response.getBody().getResults() == null) {
+    private Boolean isValid(Planet planet) {
 
-            logger.error("An error has occurred while retrieving planet {} - status: {}, message: {}",
-                name, response.getStatusCode(), response.getBody());
+        return StringUtils.isNotEmpty(planet.getName())
+                && StringUtils.isNotEmpty(planet.getClimate())
+                && StringUtils.isNotEmpty(planet.getTerrain())
+                && planet.getAppearances() >= 0;
+    }
+
+    public Page<Planet> findAll(PageRequest pageRequest) {
+
+        pageRequest = normalize(pageRequest);
+
+        return planetRepository.findAll(pageRequest);
+    }
+
+    public Optional<Planet> findByName(String name) {
+
+        if (StringUtils.isEmpty(name)) {
+
+            logger.warn("invalid parameter {}", name);
 
             return Optional.empty();
         }
 
-        return response.getBody().getResults().stream()
-                .filter(p -> p.getName().equalsIgnoreCase(name))
-                .findFirst();
+        return planetRepository.findByName(name);
+    }
+
+    public void save(Planet planet) {
+
+        if (!isValid(planet)) {
+
+            logger.error("Invalid planet attributes {}", planet::toString);
+
+            throw new IllegalArgumentException("Failed to save planet");
+        }
+
+        if (planet.getId() != null && !planetRepository.existsById(planet.getId())) {
+
+            String message = "Planet not found " + planet.getId().toString();
+
+            logger.error(message);
+
+            throw new IllegalArgumentException(message);
+        }
+
+        planetRepository.save(planet);
+
+        logger.info("Planet saved successfully {}", planet);
+    }
+
+    public void delete(ObjectId objectId) {
+
+
     }
 }

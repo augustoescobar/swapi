@@ -1,3 +1,7 @@
 app:
   swapi:
     url: https://swapi.co/api/
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:example@localhost:27017/swapi?authSource=admin&authMechanism=SCRAM-SHA-1
