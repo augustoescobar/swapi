@@ -1,6 +1,6 @@
 package br.com.challenge.swapi.clients;
 
-import br.com.challenge.swapi.clients.dtos.SwapiPlanetsPageResponseDTO;
+import br.com.challenge.swapi.clients.dtos.SwapiPlanetPage;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +13,11 @@ import java.util.Map;
 @FeignClient(name = "planets", url = "${app.swapi.url}")
 public interface SwapiPlanetClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/planets/?search={name}&page={page}&format=json", consumes = "application/json")
-    ResponseEntity<SwapiPlanetsPageResponseDTO> getPlanets(
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/planets/?search={name}&page={page}&format=json",
+            consumes = "application/json")
+    ResponseEntity<SwapiPlanetPage> getPlanets(
             @RequestHeader Map<String, String> headerMap,
             @PathVariable("name") String name,
             @PathVariable("page") Integer page);

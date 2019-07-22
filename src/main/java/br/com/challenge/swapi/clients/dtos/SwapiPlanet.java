@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class SwapiPlanetResponseDTO {
+public class SwapiPlanet {
 
     private String terrain;
     private String edited;
@@ -142,7 +142,7 @@ public class SwapiPlanetResponseDTO {
 
     @Override
     public String toString() {
-        return "SwapiPlanetResponseDTO{" +
+        return "SwapiPlanet{" +
                 "terrain='" + terrain + '\'' +
                 ", edited='" + edited + '\'' +
                 ", diameter='" + diameter + '\'' +

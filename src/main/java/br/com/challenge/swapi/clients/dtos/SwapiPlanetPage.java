@@ -3,12 +3,12 @@ package br.com.challenge.swapi.clients.dtos;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class SwapiPlanetsPageResponseDTO {
+public class SwapiPlanetPage {
 
     private Long count;
     private String next;
     private String previous;
-    private List<SwapiPlanetResponseDTO> results;
+    private List<SwapiPlanet> results;
 
     public Long getCount() {
         return count;
@@ -34,17 +34,17 @@ public class SwapiPlanetsPageResponseDTO {
         this.previous = previous;
     }
 
-    public List<SwapiPlanetResponseDTO> getResults() {
+    public List<SwapiPlanet> getResults() {
         return results;
     }
 
-    public void setResults(List<SwapiPlanetResponseDTO> results) {
+    public void setResults(List<SwapiPlanet> results) {
         this.results = results;
     }
 
     @Override
     public String toString() {
-        return "SwapiPlanetsPageResponseDTO{" +
+        return "SwapiPlanetPage{" +
                 "count=" + count +
                 ", next='" + next + '\'' +
                 ", previous='" + previous + '\'' +
