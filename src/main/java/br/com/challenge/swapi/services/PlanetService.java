@@ -2,7 +2,7 @@ package br.com.challenge.swapi.services;
 
 import br.com.challenge.swapi.documents.Planet;
 import br.com.challenge.swapi.repositories.PlanetRepository;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;

@@ -1,14 +1,15 @@
 package br.com.challenge.swapi.controllers.dtos;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Data
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageDTO<T> {
 
     private List<T> content;

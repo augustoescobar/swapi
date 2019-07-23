@@ -1,12 +1,14 @@
 package br.com.challenge.swapi.services;
 
 import br.com.challenge.swapi.controllers.dtos.PlanetDTO;
-import br.com.challenge.swapi.controllers.dtos.PageDTO;
+import br.com.challenge.swapi.controllers.dtos.PlanetPageDTO;
 import br.com.challenge.swapi.documents.Planet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+;
 
 @Service
 public class MappingService {
@@ -33,11 +35,11 @@ public class MappingService {
                 .build();
     }
 
-    public PageDTO<PlanetDTO> toPageDTO(Page<Planet> planetPage) {
+    public PlanetPageDTO toPageDTO(Page<Planet> planetPage) {
 
         Page<PlanetDTO> page = planetPage.map(this::toDTO);
 
-        return PageDTO.<PlanetDTO>builder()
+        return PlanetPageDTO.planetPageBuilder()
                 .content(page.getContent())
                 .first(page.isFirst())
                 .last(page.isLast())

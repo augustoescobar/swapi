@@ -33,4 +33,17 @@ public class Planet {
 
     @Version
     private long version;
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj instanceof Planet) {
+
+            Planet p = (Planet) obj;
+
+            return this.getId() != null && this.getId().equals(p.getId());
+        }
+
+        return false;
+    }
 }

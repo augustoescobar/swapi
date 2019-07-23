@@ -2,9 +2,13 @@ package br.com.challenge.swapi.controllers;
 
 import br.com.challenge.swapi.controllers.dtos.PageDTO;
 import br.com.challenge.swapi.controllers.dtos.PlanetDTO;
+import br.com.challenge.swapi.controllers.dtos.PlanetPageDTO;
 import br.com.challenge.swapi.documents.Planet;
 import br.com.challenge.swapi.services.MappingService;
 import br.com.challenge.swapi.services.PlanetService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +20,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/planets")
 public class PlanetController {
+
+    private static final Logger logger = LogManager.getLogger(PlanetController.class);
 
     private PlanetService planetService;
     private MappingService mappingService;
@@ -30,13 +36,13 @@ public class PlanetController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<PlanetDTO>> list(
+    public ResponseEntity<PlanetPageDTO> list(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer size) {
 
         Page<Planet> planetPage = planetService.findAll(PageRequest.of(page, size));
 
-        PageDTO<PlanetDTO> dtoPage = mappingService.toPageDTO(planetPage);
+        PlanetPageDTO dtoPage = mappingService.toPageDTO(planetPage);
 
         return ResponseEntity.ok(dtoPage);
     }
