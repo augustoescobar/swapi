@@ -1,11 +1,11 @@
 package br.com.challenge.swapi.controllers;
 
-import br.com.challenge.swapi.controllers.dtos.PageDTO;
 import br.com.challenge.swapi.controllers.dtos.PlanetDTO;
 import br.com.challenge.swapi.controllers.dtos.PlanetPageDTO;
 import br.com.challenge.swapi.documents.Planet;
 import br.com.challenge.swapi.services.MappingService;
 import br.com.challenge.swapi.services.PlanetService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -47,33 +47,30 @@ public class PlanetController {
         return ResponseEntity.ok(dtoPage);
     }
 
-//    /**
-//     * Retrieves information about a planet by name
-//     * @param id id of a previously added planet. This param has priority over others
-//     * @param name name of a planet. Examples: Alderaan, Yavin IV, Hoth, Dagobah, Bespin
-//     * @return SwapiPlanet instance within ResponseEntity bean
-//     */
-//    @GetMapping(value = {"/", "/{id}"})
-//    public ResponseEntity<PlanetDTO> get(
-//            @PathVariable(value = "id", required = false) Long id,
-//            @RequestParam(value = "name", required = false) String name) {
-//
-//        Optional<PlanetDTO> planet = Optional.empty();
-//
-//        if (id != null) {
-//
-//            planet = Optional.empty();
-//        } else if (StringUtils.isNotEmpty(name)) {
-//
-//            planet = Optional.empty();
-//        }
-//
-//        return ResponseEntity.of(planet);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<PlanetDTO> get(
+            @PathVariable String id) {
 
-    @PostMapping
-    public ResponseEntity<PlanetDTO> add(
+        Optional<Planet> optional = planetService.findById(id);
+
+        if (!optional.isPresent()) {
+
+            logger.warn("Planet not found {}", id);
+
+            return ResponseEntity.notFound().build();
+        }
+
+        PlanetDTO planetDTO = mappingService.toDTO(optional.get());
+
+        return ResponseEntity.ok(planetDTO);
+    }
+
+    @PostMapping(path = {"/", "/{id}"})
+    public ResponseEntity<PlanetDTO> save(
+            @PathVariable(required = false) String id,
             @RequestBody PlanetDTO dto) {
+
+        if (StringUtils.isNotEmpty(id)) dto.setId(id);
 
         Planet planet = mappingService.toDocument(dto);
 
@@ -81,6 +78,10 @@ public class PlanetController {
 
             planetService.save(planet);
         } catch (Exception e) {
+
+            logger.error("Failed to save planet {}", planet::toString);
+
+            logger.error(e);
 
             return ResponseEntity.badRequest().build();
         }
@@ -90,18 +91,25 @@ public class PlanetController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<PlanetDTO> edit(
-            @PathVariable(value = "id", required = false) String id,
-            @RequestBody PlanetDTO planet) {
-
-        return ResponseEntity.of(Optional.empty());
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<PlanetDTO> delete(
             @PathVariable(value = "id", required = false) String id) {
 
-        return ResponseEntity.of(Optional.empty());
+        if (StringUtils.isEmpty(id) || !ObjectId.isValid(id)) {
+
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+
+            planetService.delete(new ObjectId(id));
+        } catch (Exception e) {
+
+            logger.error("Failed to delete planet", e);
+
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

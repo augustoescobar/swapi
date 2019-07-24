@@ -13,5 +13,5 @@ public class PlanetDTO {
     private String name;
     private String climate;
     private String terrain;
-    private Long appearances;
+    private Integer appearances;
 }

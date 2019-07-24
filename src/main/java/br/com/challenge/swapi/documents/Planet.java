@@ -23,7 +23,7 @@ public class Planet {
     private String name;
     private String climate;
     private String terrain;
-    private Long appearances;
+    private Integer appearances;
 
     @CreatedDate
     private LocalDateTime createdDate;
@@ -33,17 +33,4 @@ public class Planet {
 
     @Version
     private long version;
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (obj instanceof Planet) {
-
-            Planet p = (Planet) obj;
-
-            return this.getId() != null && this.getId().equals(p.getId());
-        }
-
-        return false;
-    }
 }
